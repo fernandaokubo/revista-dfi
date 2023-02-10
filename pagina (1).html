@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Single Page com Dados de JSON</title>
+    <style>
+      /* Estilos adicionais */
+      .container {
+        width: 80%;
+        margin: 0 auto;
+      }
+      .card {
+        margin-bottom: 20px;
+        padding: 20px;
+        box-shadow: 2px 2px 5px #ccc;
+        display: flex;
+      }
+      .card img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+        float: left;
+        margin-right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Informações dos Dados</h1>
+      <form>
+        <label for="busca">Buscar por:</label>
+        <select id="busca">
+          <option value="uf">UF</option>
+          <option value="cidade">Cidade</option>
+          <option value="nome">Nome</option>
+          <option value="endereco">Endereço</option>
+        </select>
+        <input type="text" id="textoBusca">
+        <button type="submit">Buscar</button>
+      </form>
+      <input type="checkbox" id="alto" onclick="filtraCriticidade('ALTO')">ALTO<br>
+      <input type="checkbox" id="medio" onclick="filtraCriticidade('MEDIO')">MÉDIO<br>
+      <input type="checkbox" id="baixo" onclick="filtraCriticidade('BAIXO')">BAIXO<br>
+      <div id="resultados"></div>
+    </div>
+    <script>
+        const form = document.querySelector("form");
+const select = document.querySelector("#busca");
+const input = document.querySelector("#textoBusca");
+const resultados = document.querySelector("#resultados");
+
+// Dados fictícios no formato JSON
+const dados = [
+  {
+    ID: 1,
+    nome: "RESIDENCIAL João da Silva",
+    endereco: "Rua ABC, 123",
+    observacao: `CAINDO AOS PEDAÇOS:
+    Mussum Ipsum, cacilds vidis litro abertis. Posuere libero varius. Nullam a nisl ut ante blandit hendrerit. Aenean sit amet nisi.Em pé sem cair, deitado sem dormir, sentado sem cochilar e fazendo pose.Mais vale um bebadis conhecidiss, que um alcoolatra anonimis.In elementis mé pra quem é amistosis quis leo.
+
+Si num tem leite então bota uma pinga aí cumpadi!Suco de cevadiss deixa as pessoas mais interessantis.A ordem dos tratores não altera o pão duris.Todo mundo vê os porris que eu tomo, mas ninguém vê os tombis que eu levo!
+
+Cevadis im ampola pa arma uma pindureta.Mé faiz elementum girarzis, nisi eros vermeio.Mauris nec dolor in eros commodo tempor. Aenean aliquam molestie leo, vitae iaculis nisl.Per aumento de cachacis, eu reclamis.
+
+Mé faiz elementum girarzis, nisi eros vermeio.Posuere libero varius. Nullam a nisl ut ante blandit hendrerit. Aenean sit amet nisi.Leite de capivaris, leite de mula manquis sem cabeça.Todo mundo vê os porris que eu tomo, mas ninguém vê os tombis que eu levo!
+
+Interagi no mé, cursus quis, vehicula ac nisi.Si num tem leite então bota uma pinga aí cumpadi!Diuretics paradis num copo é motivis de denguis.Admodum accumsan disputationi eu sit. Vide electram sadipscing et per.
+    `,
+    uf: "SP",
+    cidade: "São Paulo",
+    criticidade: "MUITO ALTO",
+    foto: "foto.png"
+  },
+  {
+    ID: 2,
+    nome: "RESINDENCIAL Maria Pereira",
+    endereco: "Rua XYZ, 789",
+    observacao: "Sempre paga em dia",
+    uf: "RJ",
+    cidade: "Rio de Janeiro",
+    criticidade: "ALTO",
+    foto: "foto.png"
+  },
+  {
+    ID: 3,
+    nome: "RESIDENCIAL João da Silva 2",
+    endereco: "Rua ABC, 123",
+    observacao: "Cliente fiél",
+    uf: "SP",
+    cidade: "São Paulo",
+    criticidade: "BAIXO",
+    foto: "foto.png"
+  },
+  // Outros dados fictícios
+];
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  // Função para remover acentos de uma string
+  const removerAcentos = (texto) => {
+    texto = texto.toLowerCase();
+    texto = texto.replace(new RegExp("[ÁÀÂÃ]", "gi"), "a");
+    texto = texto.replace(new RegExp("[ÉÈÊ]", "gi"), "e");
+    texto = texto.replace(new RegExp("[ÍÌÎ]", "gi"), "i");
+    texto = texto.replace(new RegExp("[ÓÒÔÕ]", "gi"), "o");
+    texto = texto.replace(new RegExp("[ÚÙÛ]", "gi"), "u");
+    texto = texto.replace(new RegExp("[Ç]", "gi"), "c");
+    return texto;
+  };
+
+  // Filtrar dados de acordo com o texto da busca (ignorando acentos)
+  const filtrados = dados.filter((dado) => {
+    return (
+      removerAcentos(dado[select.value]).includes(
+        removerAcentos(input.value)
+      )
+    );
+  });
+
+// Mostrar dados filtrados na página
+resultados.innerHTML = filtrados
+  .map(
+    (dado) => `
+    <div class="card">
+      <img src='foto.png'>
+        <div>
+            <p><strong>Nome:</strong> ${dado.nome}</p>
+            <p><strong>Endereço:</strong> ${dado.endereco}</p>
+            <p><strong>Criticidade:</strong> ${dado.criticidade}</p>
+            <p><strong>UF:</strong> ${dado.uf}</p>
+            <p><strong>Cidade:</strong> ${dado.cidade}</p>
+            <p><strong>Observação:</strong> ${dado.observacao}</p>
+        </div>
+    </div>
+    `
+  )
+  .join("");
+});
+
+let statusDoCheckBox = {
+  ALTO: false,
+  MEDIO: false,
+  BAIXO: false
+};
+
+function filtraCriticidade(criticidade) {
+  statusDoCheckBox[criticidade] = !statusDoCheckBox[criticidade];
+  let cards = document.querySelectorAll(".card");
+  cards.forEach(function (card) {
+    let cardCriticidade = card.querySelector("p:nth-child(3)").textContent.split(": ")[1];
+    if (statusDoCheckBox["ALTO"] && (cardCriticidade === "ALTO" || cardCriticidade === "MUITO ALTO")) {
+      card.style.display = "block";
+    } else if (statusDoCheckBox["MEDIO"] && cardCriticidade === "MEDIO") {
+      card.style.display = "block";
+    } else if (statusDoCheckBox["BAIXO"] && (cardCriticidade === "BAIXO" || cardCriticidade === "MUITO BAIXO")) {
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
+  });
+}
+
+    </script>
+  </body>
+</html>
