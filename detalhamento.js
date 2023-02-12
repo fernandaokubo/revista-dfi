@@ -45,29 +45,45 @@ function _datatableSoExcel (idTabela, ordenaColuna, ordenaForma, tituloPlanilha,
 $( document ).ready(function() {
   $('.loadingPagina').css('display', 'block')
   
-  // fetch('dados')
-  // .then(Response => Response.json())
-  // .then(dados =>{
   const params = new URLSearchParams(window.location.search)
   
   const id = parseInt(params.get('id'))
-  // let registroEncontrado
 
-  // dados.forEach(function(item, index){
-    
-  //   if(item.idDfi === id){
-  //     registroEncontrado = index
-  //     return false
-  //   }
-  // })
+  dados.forEach(function(item, index) {
+    let idDados = item.idDfi
+    if (idDados == id) {
+      switch(item.PRIORIDADE){
+        case 'MUITO ALTO':
+          var criticidade = `<b style="color:red;">${item.PRIORIDADE}</b>`
+          break;
+        case 'ALTO':
+          var criticidade = `<b style="color:red;">${item.PRIORIDADE}</b>`
+          break;
+        case 'MEDIO':
+          var criticidade = `<b style="color:orange;">${item.PRIORIDADE}</b>`
+          break;
+        case 'BAIXO':
+          var criticidade = `<b style="color:green;">${item.PRIORIDADE}</b>`
+          break;
+        case 'MUITO BAIXO':
+          var criticidade = `<b style="color:green;">${item.PRIORIDADE}</b>`
+          break;
+        default:
+          var criticidade = `<b style=">${item.PRIORIDADE}</b>`
+      }
 
-  const registroEncontrado = dados.find(function(registro){
-    return registro.idDfi ===id
-  })
+      $('#nomeEmpreendimento').html(item.EMPREENDIMENTO)
+      $('#nomeCidade').html(`<b>${item.CIDADE}</b>`)
+      $('#nomeUF').html(`<b>${item.UF}</b>`)
+      $('#nomeDano').html(`<b>${item.TIPO_DE_DANO}</b>`)
+      $('#nomeCriticidade').html(criticidade)
+      $('#nomeDataOrigem').html(`<b>${item.DATA_ORIGEM}</b>`)
+      $('#nomeStatus').html(`<b>${item.statusDFI}</b>`)
+      // $('#nomeUF').html(item.UF)
+      // $('#nomeUF').html(item.UF)
+    }
+  });
   
-
-  $('#nomeEmpreendimento').html(registroEncontrado.EMPREENDIMENTO)
-
   $('.loadingPagina').css('display', 'none')
 
 })

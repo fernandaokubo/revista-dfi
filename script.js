@@ -87,7 +87,10 @@ $( document ).ready(function() {
           <td>${item.DATA_ORIGEM}</td> 
           <td>${item.updated_at}</td> 
           <td>${item.statusDFI}</td> 
-          <td>PRAZO</td> 
+          <td>PRAZO</td>
+          <td>
+            <a class="btn btn-primary btn-sm" href="empreendimento.html?id=${item.idDfi}" role="button">Detalhamento</a>
+          </td>
         </tr>
       `;
       
